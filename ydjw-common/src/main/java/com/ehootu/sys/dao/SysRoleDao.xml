@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ehootu.sys.dao.SysRoleDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.ehootu.sys.entity.SysRoleEntity" id="sysRoleMap">
+        <result property="roleId" column="role_id"/>
+        <result property="roleName" column="role_name"/>
+        <result property="remark" column="remark"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.ehootu.sys.entity.SysRoleEntity">
+		select * from sys_role where role_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.ehootu.sys.entity.SysRoleEntity">
+		select * from sys_role
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by role_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from sys_role 
+	</select>
+	 
+	<insert id="save" parameterType="com.ehootu.sys.entity.SysRoleEntity" useGeneratedKeys="true" keyProperty="roleId">
+		insert into sys_role
+		(
+			`role_name`, 
+			`remark`, 
+			`dept_id`, 
+			`create_time`
+		)
+		values
+		(
+			#{roleName}, 
+			#{remark}, 
+			#{deptId}, 
+			#{createTime}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.ehootu.sys.entity.SysRoleEntity">
+		update sys_role 
+		<set>
+			<if test="roleName != null">`role_name` = #{roleName}, </if>
+			<if test="remark != null">`remark` = #{remark}, </if>
+			<if test="deptId != null">`dept_id` = #{deptId}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}</if>
+		</set>
+		where role_id = #{roleId}
+	</update>
+	
+	<delete id="delete">
+		delete from sys_role where role_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from sys_role where role_id in 
+		<foreach item="roleId" collection="array" open="(" separator="," close=")">
+			#{roleId}
+		</foreach>
+	</delete>
+
+</mapper>
